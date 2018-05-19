@@ -87,7 +87,7 @@ class Particle(object):
         potential_func = partial(calc_potential, particle_2, particle_3)
         h_x = safe_value(sqrt_e_const * self.x_c)
         self.new_acc_x -= (
-            (
+            2 * (
                 potential_func(self.shift_x(h_x))
                 - potential_func(self.shift_x(-h_x))
             ) / ((self.x_c + h_x) - (self.x_c - h_x))
@@ -95,7 +95,7 @@ class Particle(object):
 
         h_y = safe_value(sqrt_e_const * self.y_c)
         self.new_acc_y -= (
-            (
+            2 * (
                 potential_func(self.shift_y(h_y))
                 - potential_func(self.shift_y(-h_y))
             ) / ((self.y_c + h_y) - (self.y_c - h_y))
@@ -103,7 +103,7 @@ class Particle(object):
 
         h_z = safe_value(sqrt_e_const * self.z_c)
         self.new_acc_z -= (
-            (
+            2 * (
                 potential_func(self.shift_z(h_z))
                 - potential_func(self.shift_z(-h_z))
             ) / ((self.z_c + h_z) - (self.z_c - h_z))
@@ -125,20 +125,20 @@ class Particle(object):
     def update_distance(self, timedelta):
         self.x_c += (
             self.x_v * timedelta
-            # + 1.0 / 2 * self.acc_x * timedelta ** 2
-            + 1.0 / 2 * self.acc_x * timedelta
+            + 1.0 / 2 * self.acc_x * timedelta ** 2
+            # + 1.0 / 2 * self.acc_x * timedelta
         )
 
         self.y_c += (
             self.y_v * timedelta
-            # + 1.0 / 2 * self.acc_y * timedelta ** 2
-            + 1.0 / 2 * self.acc_y * timedelta
+            + 1.0 / 2 * self.acc_y * timedelta ** 2
+            # + 1.0 / 2 * self.acc_y * timedelta
         )
 
         self.z_c += (
             self.z_v * timedelta
-            # + 1.0 / 2 * self.acc_z * timedelta ** 2
-            + 1.0 / 2 * self.acc_z * timedelta
+            + 1.0 / 2 * self.acc_z * timedelta ** 2
+            # + 1.0 / 2 * self.acc_z * timedelta
         )
 
     def velocity_update(self, timedelta):
@@ -146,6 +146,9 @@ class Particle(object):
         self.x_v += (1.0 / 2) * (self.acc_x + self.new_acc_x) * timedelta
         self.y_v += (1.0 / 2) * (self.acc_y + self.new_acc_y) * timedelta
         self.z_v += (1.0 / 2) * (self.acc_z + self.new_acc_z) * timedelta
+        # self.x_v += (self.acc_x + self.new_acc_x) * timedelta
+        # self.y_v += (self.acc_y + self.new_acc_y) * timedelta
+        # self.z_v += (self.acc_z + self.new_acc_z) * timedelta
         self.reset_acceleration()
 
 
