@@ -47,7 +47,8 @@ int main (int argc, char** argv) {
     char *input_filename = argv[1];
     char *output_filename = argv[2];
     int stepcount = atoi(argv[3]);
-    int deltatime = atoi(argv[4]);
+    double deltatime;
+    sscanf(argv[4], "%lf", &deltatime);
 
     // if present puts the result after each step i
     // (counted from 1) in a file particles_out_i.txt
@@ -60,6 +61,12 @@ int main (int argc, char** argv) {
     }
 
     particle_set p_set = read_particle(input_filename);
+
+    print_to_lines_p_set(p_set);
+    calc_accelerations(p_set);
+    reset_accelerations(p_set);
+
+    puts("");
     // print_p_set(p_set);
 
     update_distances(p_set, deltatime);

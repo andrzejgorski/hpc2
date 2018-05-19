@@ -41,3 +41,4 @@ particle_set new_particle_set(int number);
 void update_distances(particle_set p_set, double timedelta);
 void update_velocity(particle_set p_set, double timedelta);
 void calc_accelerations(particle_set p_set);
+void reset_accelerations(particle_set p_set);

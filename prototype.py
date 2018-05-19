@@ -45,12 +45,12 @@ class Particle(object):
     def __repr__(self):
         # return str(self.index)
         return (
-            str(self.x_c) + ' ' +
-            str(self.y_c) + ' ' +
-            str(self.z_c) + ' ' +
-            str(self.x_v) + ' ' +
-            str(self.y_v) + ' ' +
-            str(self.z_v)
+            ("%.16f" % self.x_c) + ' ' +
+            ("%.16f" % self.y_c) + ' ' +
+            ("%.16f" % self.z_c) + ' ' +
+            ("%.16f" % self.x_v) + ' ' +
+            ("%.16f" % self.y_v) + ' ' +
+            ("%.16f" % self.z_v)
         )
 
     def shift_x(self, value):
@@ -86,7 +86,7 @@ class Particle(object):
         )
         potential_func = partial(calc_potential, particle_2, particle_3)
         h_x = safe_value(sqrt_e_const * self.x_c)
-        self.new_acc_x += (
+        self.new_acc_x -= (
             (
                 potential_func(self.shift_x(h_x))
                 - potential_func(self.shift_x(-h_x))
@@ -94,7 +94,7 @@ class Particle(object):
         )
 
         h_y = safe_value(sqrt_e_const * self.y_c)
-        self.new_acc_y += (
+        self.new_acc_y -= (
             (
                 potential_func(self.shift_y(h_y))
                 - potential_func(self.shift_y(-h_y))
@@ -102,7 +102,7 @@ class Particle(object):
         )
 
         h_z = safe_value(sqrt_e_const * self.z_c)
-        self.new_acc_z += (
+        self.new_acc_z -= (
             (
                 potential_func(self.shift_z(h_z))
                 - potential_func(self.shift_z(-h_z))
@@ -114,31 +114,35 @@ class Particle(object):
         )
 
     def reset_acceleration(self):
-        self.new_acc_x = 0.0
-        self.new_acc_y = 0.0
-        self.new_acc_z = 0.0
-
         self.acc_x = self.new_acc_x
         self.acc_y = self.new_acc_y
         self.acc_z = self.new_acc_z
 
+        self.new_acc_x = 0.0
+        self.new_acc_y = 0.0
+        self.new_acc_z = 0.0
+
     def update_distance(self, timedelta):
         self.x_c += (
             self.x_v * timedelta
-            + 1.0 / 2 * self.acc_x * timedelta ** 2
+            # + 1.0 / 2 * self.acc_x * timedelta ** 2
+            + 1.0 / 2 * self.acc_x * timedelta
         )
 
         self.y_c += (
             self.y_v * timedelta
-            + 1.0 / 2 * self.acc_y * timedelta ** 2
+            # + 1.0 / 2 * self.acc_y * timedelta ** 2
+            + 1.0 / 2 * self.acc_y * timedelta
         )
 
         self.z_c += (
             self.z_v * timedelta
-            + 1.0 / 2 * self.acc_z * timedelta ** 2
+            # + 1.0 / 2 * self.acc_z * timedelta ** 2
+            + 1.0 / 2 * self.acc_z * timedelta
         )
 
     def velocity_update(self, timedelta):
+        # After deleting 1/2 the results are more or less identical.
         self.x_v += (1.0 / 2) * (self.acc_x + self.new_acc_x) * timedelta
         self.y_v += (1.0 / 2) * (self.acc_y + self.new_acc_y) * timedelta
         self.z_v += (1.0 / 2) * (self.acc_z + self.new_acc_z) * timedelta
@@ -150,6 +154,7 @@ class ParticleSet(object):
     def __init__(self, particles):
         self.particles = particles
         self.calc_accelerations()
+        self.reset_acceleration()
 
     def calc_accelerations(self):
         for i in xrange(len(self.particles)):
@@ -173,6 +178,10 @@ class ParticleSet(object):
     def velocity_update(self, timedelta):
         for particle in self.particles:
             particle.velocity_update(timedelta)
+
+    def reset_acceleration(self):
+        for particle in self.particles:
+            particle.reset_acceleration()
 
 
 def norm_distance(particle_a, particle_b):

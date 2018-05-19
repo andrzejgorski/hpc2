@@ -26,7 +26,7 @@ void print_particle(particle p) {
 
 void particle_to_line(particle p) {
     printf(
-        "%lf %lf %lf %lf %lf %lf\n",
+        "%.16lf %.16lf %.16lf %.16lf %.16lf %.16lf\n",
         p.x_c, p.y_c, p.z_c, p.x_v, p.y_v, p.z_v
     );
 }
@@ -125,7 +125,7 @@ void update_acceleration(particle *p1, particle *p2, particle *p3) {
     //printf("potential_x1 %E\n", potential_x1);
     //printf("potential_x2 %E\n", potential_x2);
     //printf("Diff %E\n", potential_x1 - potential_x2);
-    p1->new_acc_x += (potential_x1 - potential_x2) / (up_x - down_x);
+    p1->new_acc_x -= (potential_x1 - potential_x2) / (up_x - down_x);
     //printf("After update %E\n", p1->new_acc_x);
 
 
@@ -143,7 +143,7 @@ void update_acceleration(particle *p1, particle *p2, particle *p3) {
     double potential_y2 = calc_potential(p1, p2, p3);
 
     p1->y_c = old_y;
-    p1->new_acc_y += (potential_y1 - potential_y2) / (up_y - down_y);
+    p1->new_acc_y -= (potential_y1 - potential_y2) / (up_y - down_y);
 
 
     // calculating z
@@ -160,23 +160,26 @@ void update_acceleration(particle *p1, particle *p2, particle *p3) {
     double potential_z2 = calc_potential(p1, p2, p3);
 
     p1->z_c = old_z;
-    p1->new_acc_z += (potential_z1 - potential_z2) / (up_z - down_z);
+    p1->new_acc_z -= (potential_z1 - potential_z2) / (up_z - down_z);
 }
 
 void update_distance(particle *p, double timedelta) {
     p->x_c += (
         p->x_v * timedelta
-        + 1.0 / 2 * p->acc_x * timedelta * timedelta
+        // + (1.0 / 2) * p->acc_x * timedelta * timedelta
+        + (1.0 / 2) * p->acc_x * timedelta
     );
 
     p->y_c += (
         p->y_v * timedelta
-        + 1.0 / 2 * p->acc_y * timedelta * timedelta
+        // + ( 1.0 / 2) * p->acc_y * timedelta * timedelta
+        + ( 1.0 / 2) * p->acc_y * timedelta
     );
 
     p->z_c += (
         p->z_v * timedelta
-        + 1.0 / 2 * p->acc_z * timedelta * timedelta
+        // + (1.0 / 2) * p->acc_z * timedelta * timedelta
+        + (1.0 / 2) * p->acc_z * timedelta
     );
 }
 
@@ -223,5 +226,11 @@ void update_velocity(particle_set p_set, double timedelta) {
 void update_distances(particle_set p_set, double timedelta) {
     for (int i = 0; i < p_set.number; i ++) {
         update_distance(&(p_set.particles[i]), timedelta);
+    }
+}
+
+void reset_accelerations(particle_set p_set) {
+    for (int i = 0; i < p_set.number; i ++) {
+        reset_acceleration(&(p_set.particles[i]));
     }
 }
