@@ -34,5 +34,10 @@ typedef struct __particle_set particle_set;
 
 void print_particle(particle p);
 void print_p_set(particle_set p_set);
+void print_to_lines_p_set(particle_set p_set);
 void free_particle_set(particle_set p_set);
 particle_set new_particle_set(int number);
+
+void update_distances(particle_set p_set, double timedelta);
+void update_velocity(particle_set p_set, double timedelta);
+void calc_accelerations(particle_set p_set);

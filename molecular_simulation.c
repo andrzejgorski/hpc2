@@ -60,7 +60,14 @@ int main (int argc, char** argv) {
     }
 
     particle_set p_set = read_particle(input_filename);
-    print_p_set(p_set);
+    // print_p_set(p_set);
+
+    update_distances(p_set, deltatime);
+    calc_accelerations(p_set);
+    update_velocity(p_set, deltatime);
+
+    print_to_lines_p_set(p_set);
+
     free_particle_set(p_set);
 
     // printf("Input filename %s\n", input_filename);

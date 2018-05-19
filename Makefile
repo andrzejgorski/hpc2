@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=
+CFLAGS=-lm
 OBJECTS=molecular_simulation.c particles.o files.o
 
 nn_cc: $(OBJECTS)
